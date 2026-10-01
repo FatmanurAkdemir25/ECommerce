@@ -25,6 +25,8 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=ECommerceDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True
+      SeedAdmin__Email: ${SEED_ADMIN_EMAIL}
+      SeedAdmin__Password: ${SEED_ADMIN_PASSWORD}
     ports:
       - "8080:8080"
 
