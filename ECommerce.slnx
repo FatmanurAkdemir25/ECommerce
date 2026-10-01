@@ -5,4 +5,9 @@
     <Project Path="src/ECommerce.Domain/ECommerce.Domain.csproj" />
     <Project Path="src/ECommerce.Infrastructure/ECommerce.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/Çözüm Öğeleri/">
+    <File Path=".env" />
+    <File Path=".env.example" />
+    <File Path="docker-compose.yml" />
+  </Folder>
 </Solution>
