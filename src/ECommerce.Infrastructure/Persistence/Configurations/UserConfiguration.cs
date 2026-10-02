@@ -7,6 +7,8 @@ public class UserConfiguration : BaseConfiguration<User>
         b.ToTable("users");
         b.Property(x => x.Email).HasMaxLength(256).IsRequired();
         b.HasIndex(x => x.Email).IsUnique();
+        b.Property(x => x.FullName).HasMaxLength(200).IsRequired();
+        b.Property(x => x.Phone).HasMaxLength(30);
         b.Property(x => x.PasswordHash).HasMaxLength(512).IsRequired();
     }
 }

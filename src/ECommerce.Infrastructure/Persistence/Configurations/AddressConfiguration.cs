@@ -1,4 +1,5 @@
 ﻿namespace ECommerce.Infrastructure.Persistence.Configurations;
+//Entity lerin EF Core/ veritabanı ayarlarını tutar.
 
 public class AddressConfiguration : BaseConfiguration<Address>
 {
@@ -10,7 +11,7 @@ public class AddressConfiguration : BaseConfiguration<Address>
         b.Property(x => x.District).HasMaxLength(100);
         b.Property(x => x.AddressLine).HasMaxLength(500).IsRequired();
 
-        b.HasOne(x => x.Customer).WithMany(c => c.Addresses)
-            .HasForeignKey(x => x.CustomerId).OnDelete(DeleteBehavior.Cascade);
+        b.HasOne(x => x.User).WithMany(u => u.Addresses)
+            .HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
     }
 }

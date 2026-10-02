@@ -19,9 +19,9 @@ public static class DbSeeder
         [RoleNames.Admin] = Permissions.GetAll().ToArray(),
         [RoleNames.Sales] =
         [
-            Permissions.Products.Create, Permissions.Products.Update,
+            Permissions.Products.Create, Permissions.Products.Update, Permissions.Products.AdjustStock,
             Permissions.Categories.Create, Permissions.Categories.Update,
-            Permissions.Customers.ViewAll,
+            Permissions.Users.ViewAll,
             Permissions.Orders.ViewAll, Permissions.Orders.UpdateStatus, Permissions.Orders.Cancel,
             Permissions.Payments.UpdateStatus
         ],
@@ -89,7 +89,11 @@ public static class DbSeeder
 
         if (await db.Users.AnyAsync(u => u.Email == email, ct)) return;
 
-        var admin = new User { Email = email };
+        var admin = new User
+        {
+            Email = email,
+            FullName = config["SeedAdmin:FullName"] ?? "Sistem Yöneticisi"
+        };
         admin.PasswordHash = new PasswordHasher<User>().HashPassword(admin, password);
         db.Users.Add(admin);
         db.UserRoles.Add(new UserRole { UserId = admin.Id, RoleId = roles[RoleNames.Admin].Id });
