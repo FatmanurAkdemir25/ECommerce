@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace ECommerce.Infrastructure.Persistence.Seed;
-
+//veritabanına başlangıç verilerini ekler/günceller
 public static class DbSeeder
 {
     private static readonly Dictionary<string, string> RoleDefinitions = new()
@@ -28,13 +28,13 @@ public static class DbSeeder
         [RoleNames.Customer] =
         [
             Permissions.Carts.Manage, Permissions.Orders.Create,
-            Permissions.Orders.Cancel // sadece kendi siparişi (Adım 10'da sahiplik kontrolü)
+            Permissions.Orders.Cancel // sadece kendi siparişi
         ]
     };
 
     public static async Task SeedAsync(AppDbContext db, IConfiguration config, ILogger logger, CancellationToken ct)
     {
-        // 1) Roller
+        //Roller
         var roles = await db.Roles.ToDictionaryAsync(r => r.Name, ct);
         var newRoles = new HashSet<string>();
         foreach (var (name, description) in RoleDefinitions)
@@ -46,7 +46,7 @@ public static class DbSeeder
             newRoles.Add(name);
         }
 
-        // 2) Permission'lar (koddaki sabitlerden)
+        //Permission'lar (koddaki sabitlerden)
         var permissions = await db.Permissions.ToDictionaryAsync(p => p.Name, ct);
         var newPermissions = new HashSet<string>();
         foreach (var name in Permissions.GetAll())
@@ -58,7 +58,7 @@ public static class DbSeeder
             newPermissions.Add(name);
         }
 
-        // 3) Varsayılan rol-permission atamaları.
+        //Varsayılan rol-permission atamaları.
         // Sadece yeni rol veya yeni permission için eklenir; sonradan elle kaldırılan izin geri gelmez.
         var existing = (await db.RolePermissions
                 .Select(rp => new { rp.RoleId, rp.PermissionId }).ToListAsync(ct))
@@ -78,7 +78,7 @@ public static class DbSeeder
 
         await db.SaveChangesAsync(ct);
 
-        // 4) Varsayılan admin (bilgiler konfigürasyondan gelir, kodda yok)
+        //Varsayılan admin (bilgiler konfigürasyondan gelir, kodda yok)
         var email = config["SeedAdmin:Email"]?.Trim().ToLowerInvariant();
         var password = config["SeedAdmin:Password"];
         if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))

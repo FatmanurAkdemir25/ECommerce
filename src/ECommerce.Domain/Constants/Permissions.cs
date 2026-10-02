@@ -58,6 +58,7 @@ public static class Permissions
     }
 
     // Seeder bunu kullanır: yeni sabit eklemek yeterli, seed otomatik güncellenir
+    //Permissions sınıfının içindeki bütün sınıfları bul - onların içindeki bütün public static alanları bul - sadece const string olanları seç - değerlerini al - liste olarak döndür.
     public static IReadOnlyList<string> GetAll() => typeof(Permissions)
         .GetNestedTypes(BindingFlags.Public)
         .SelectMany(t => t.GetFields(BindingFlags.Public | BindingFlags.Static))

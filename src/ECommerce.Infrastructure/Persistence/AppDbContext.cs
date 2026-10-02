@@ -1,7 +1,8 @@
 ﻿namespace ECommerce.Infrastructure.Persistence;
-
+//uygulama ile vt arasındaki ana EF Core bağlantısını sağlar.
 public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
 {
+    //hangi entity lerin vt de kullanılacağını DbSet lerle tanımlar 
     public DbSet<User> Users => Set<User>();
     public DbSet<Role> Roles => Set<Role>();
     public DbSet<Permission> Permissions => Set<Permission>();
@@ -19,7 +20,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<OrderItem> OrderItems => Set<OrderItem>();
     public DbSet<Payment> Payments => Set<Payment>();
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder) //entity congiguration larını yükler
     {
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
