@@ -1,6 +1,9 @@
-﻿using ECommerce.Infrastructure.Persistence;
+﻿using ECommerce.Application.Abstractions;
+using ECommerce.Infrastructure.Caching;
+using ECommerce.Infrastructure.Persistence;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+
 
 namespace ECommerce.Infrastructure;
 
@@ -15,6 +18,9 @@ public static class DependencyInjection
             options.UseSqlServer(connectionString).UseSnakeCaseNamingConvention());
 
         services.AddHostedService<DatabaseInitializer>();
+        // Redis'e geçerken sadece bu iki satır değişecek
+        services.AddMemoryCache();
+        services.AddSingleton<ICacheService, MemoryCacheService>();
 
         return services;
     }

@@ -1,17 +1,48 @@
+using ECommerce.API.Extensions;
+using ECommerce.API.Filters;
+using ECommerce.API.Middleware;
+using ECommerce.Application;
 using ECommerce.Infrastructure;
+using Microsoft.Extensions.Hosting;
+using Serilog;
 
-var builder = WebApplication.CreateBuilder(args);
+// Uygulama ayağa kalkarken oluşan hataları da yakalamak için geçici logger
+Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
 
-builder.Services.AddControllers();
-builder.Services.AddInfrastructure(builder.Configuration);
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+try
+{
+    var builder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
+    builder.Host.UseSerilog((context, services, configuration) => configuration
+        .ReadFrom.Configuration(context.Configuration)
+        .ReadFrom.Services(services)
+        .Enrich.FromLogContext());
 
-app.UseSwagger();
-app.UseSwaggerUI();
+    builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>());
+    builder.Services.AddApplication(builder.Configuration);
+    builder.Services.AddInfrastructure(builder.Configuration);
+    builder.Services.AddSwaggerWithJwt();
 
-app.MapControllers();
+    var app = builder.Build();
 
-app.Run();
+    // Sıra önemli: correlation ID → request logging → hata yakalama
+    app.UseMiddleware<CorrelationIdMiddleware>();
+    app.UseSerilogRequestLogging();
+    app.UseMiddleware<ExceptionHandlingMiddleware>();
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
+
+    app.MapControllers();
+
+    app.Run();
+}
+catch (Exception ex) when (ex is not HostAbortedException)
+{
+    // HostAbortedException: 'dotnet ef' komutları uygulamayı bilerek durdurur, hata değil
+    Log.Fatal(ex, "Uygulama beklenmedik şekilde sonlandı.");
+}
+finally
+{
+    Log.CloseAndFlush();
+}
