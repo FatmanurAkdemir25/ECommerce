@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using ECommerce.Application.Auth;
 
 namespace ECommerce.Application;
 
@@ -18,6 +20,8 @@ public static class DependencyInjection //Application katmanındaki FluentValida
         {
             cfg.LicenseKey = configuration["AutoMapper:LicenseKey"];
         }, assembly);
+        services.TryAddSingleton(TimeProvider.System);
+        services.AddScoped<IAuthService, AuthService>();
 
         return services;
     }
