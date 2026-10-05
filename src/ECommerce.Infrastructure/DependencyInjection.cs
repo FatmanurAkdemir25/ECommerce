@@ -17,7 +17,7 @@ public static class DependencyInjection
 
         services.AddDbContext<AppDbContext>(options => //veritabanı bağlantısını yapılandırır
             options.UseSqlServer(connectionString).UseSnakeCaseNamingConvention());
-
+        services.AddScoped<IAppDbContext>(sp => sp.GetRequiredService<AppDbContext>());
 
         services.AddHostedService<DatabaseInitializer>(); //database initializer i uygulama başlangıcında çalışacak şekilde kaydeder
         services.AddHostedService<DatabaseInitializer>();
