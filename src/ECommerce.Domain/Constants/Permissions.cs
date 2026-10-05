@@ -11,18 +11,7 @@ public static class Permissions
         public const string Delete = "Categories.Delete";
     }
 
-    public static class Products
-    {
-        public const string Create = "Products.Create";
-        public const string Update = "Products.Update";
-        public const string Delete = "Products.Delete";
-    }
-
-    public static class Customers
-    {
-        public const string ViewAll = "Customers.ViewAll";
-    }
-
+    
     public static class Carts
     {
         public const string Manage = "Carts.Manage";
@@ -46,18 +35,28 @@ public static class Permissions
         public const string Manage = "Roles.Manage";
     }
 
-    // C# bir sınıfın içinde aynı adlı iç sınıfa izin vermediği için "PermissionAdmin"
+    
     public static class PermissionAdmin
     {
         public const string Manage = "Permissions.Manage";
     }
 
+    public static class Products
+    {
+        public const string Create = "Products.Create";
+        public const string Update = "Products.Update";
+        public const string Delete = "Products.Delete";
+        public const string AdjustStock = "Products.AdjustStock";  
+    }
+
     public static class Users
     {
         public const string Manage = "Users.Manage";
+        public const string ViewAll = "Users.ViewAll";              
     }
 
     // Seeder bunu kullanır: yeni sabit eklemek yeterli, seed otomatik güncellenir
+    //Permissions sınıfının içindeki bütün sınıfları bul - onların içindeki bütün public static alanları bul - sadece const string olanları seç - değerlerini al - liste olarak döndür.
     public static IReadOnlyList<string> GetAll() => typeof(Permissions)
         .GetNestedTypes(BindingFlags.Public)
         .SelectMany(t => t.GetFields(BindingFlags.Public | BindingFlags.Static))

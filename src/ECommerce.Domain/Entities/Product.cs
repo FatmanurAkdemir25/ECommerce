@@ -12,10 +12,10 @@ public class Product : BaseEntity
     public bool IsActive { get; set; } = true;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    // Concurrency token (stok çakışmaları için), Adım 3'te yapılandırılacak
     public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 
     public Category Category { get; set; } = null!;
     public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
     public ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    public ICollection<ProductTransaction> Transactions { get; set; } = new List<ProductTransaction>();
 }

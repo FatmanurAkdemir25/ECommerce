@@ -57,6 +57,8 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     password_hash = table.Column<string>(type: "nvarchar(512)", maxLength: 512, nullable: false),
+                    full_name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    phone = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true),
                     is_active = table.Column<bool>(type: "bit", nullable: false),
                     created_at = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -82,6 +84,7 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_products", x => x.id);
+                    table.CheckConstraint("ck_products_stock_non_negative", "stock >= 0");
                     table.ForeignKey(
                         name: "fk_products_categories_category_id",
                         column: x => x.category_id,
@@ -115,23 +118,45 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "customers",
+                name: "addresses",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    full_name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    phone = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: true)
+                    title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    city = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    district = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    address_line = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
+                    is_default = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("pk_customers", x => x.id);
+                    table.PrimaryKey("pk_addresses", x => x.id);
                     table.ForeignKey(
-                        name: "fk_customers_users_user_id",
+                        name: "fk_addresses_users_user_id",
                         column: x => x.user_id,
                         principalTable: "users",
                         principalColumn: "id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "carts",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_carts", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_carts_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -207,53 +232,11 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "addresses",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    customer_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    title = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    city = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    district = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    address_line = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: false),
-                    is_default = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_addresses", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_addresses_customers_customer_id",
-                        column: x => x.customer_id,
-                        principalTable: "customers",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "carts",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    customer_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_carts", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_carts_customers_customer_id",
-                        column: x => x.customer_id,
-                        principalTable: "customers",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "orders",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    customer_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     address_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     status = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     total_amount = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
@@ -269,9 +252,9 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "fk_orders_customers_customer_id",
-                        column: x => x.customer_id,
-                        principalTable: "customers",
+                        name: "fk_orders_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -350,10 +333,69 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "receipts",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    source = table.Column<string>(type: "nvarchar(30)", maxLength: 30, nullable: false),
+                    order_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    performed_by_user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    note = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_receipts", x => x.id);
+                    table.CheckConstraint("ck_receipts_source_reference", "(source IN ('Order', 'OrderCancellation') AND order_id IS NOT NULL) OR (source IN ('SellerAdjustment', 'InitialStock') AND performed_by_user_id IS NOT NULL)");
+                    table.ForeignKey(
+                        name: "fk_receipts_orders_order_id",
+                        column: x => x.order_id,
+                        principalTable: "orders",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_receipts_users_performed_by_user_id",
+                        column: x => x.performed_by_user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "product_transactions",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    receipt_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    product_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    type = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
+                    quantity = table.Column<int>(type: "int", nullable: false),
+                    stock_after = table.Column<int>(type: "int", nullable: false),
+                    created_at = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_product_transactions", x => x.id);
+                    table.CheckConstraint("ck_product_transactions_quantity_positive", "quantity > 0");
+                    table.ForeignKey(
+                        name: "fk_product_transactions_products_product_id",
+                        column: x => x.product_id,
+                        principalTable: "products",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_product_transactions_receipts_receipt_id",
+                        column: x => x.receipt_id,
+                        principalTable: "receipts",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
-                name: "ix_addresses_customer_id",
+                name: "ix_addresses_user_id",
                 table: "addresses",
-                column: "customer_id");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_cart_items_cart_id_product_id",
@@ -367,21 +409,15 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                 column: "product_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_carts_customer_id",
+                name: "ix_carts_user_id",
                 table: "carts",
-                column: "customer_id",
+                column: "user_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "ix_categories_name",
                 table: "categories",
                 column: "name",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_customers_user_id",
-                table: "customers",
-                column: "user_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -400,9 +436,9 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                 column: "address_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_orders_customer_id",
+                name: "ix_orders_user_id",
                 table: "orders",
-                column: "customer_id");
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_payments_order_id",
@@ -417,9 +453,30 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_product_transactions_product_id_created_at",
+                table: "product_transactions",
+                columns: new[] { "product_id", "created_at" });
+
+            migrationBuilder.CreateIndex(
+                name: "ix_product_transactions_receipt_id_product_id",
+                table: "product_transactions",
+                columns: new[] { "receipt_id", "product_id" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "ix_products_category_id",
                 table: "products",
                 column: "category_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_receipts_order_id",
+                table: "receipts",
+                column: "order_id");
+
+            migrationBuilder.CreateIndex(
+                name: "ix_receipts_performed_by_user_id",
+                table: "receipts",
+                column: "performed_by_user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_refresh_tokens_token",
@@ -473,6 +530,9 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                 name: "payments");
 
             migrationBuilder.DropTable(
+                name: "product_transactions");
+
+            migrationBuilder.DropTable(
                 name: "refresh_tokens");
 
             migrationBuilder.DropTable(
@@ -491,7 +551,7 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                 name: "products");
 
             migrationBuilder.DropTable(
-                name: "orders");
+                name: "receipts");
 
             migrationBuilder.DropTable(
                 name: "permissions");
@@ -503,10 +563,10 @@ namespace ECommerce.Infrastructure.Persistence.Migrations
                 name: "categories");
 
             migrationBuilder.DropTable(
-                name: "addresses");
+                name: "orders");
 
             migrationBuilder.DropTable(
-                name: "customers");
+                name: "addresses");
 
             migrationBuilder.DropTable(
                 name: "users");
