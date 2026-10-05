@@ -54,6 +54,11 @@ public class ExceptionHandlingMiddleware(
                 logger.LogWarning("Doğrulama hatası: {@Errors}", errors);
                 break;
 
+            case UnauthorizedException:
+                problem = Create(StatusCodes.Status401Unauthorized, "Kimlik doğrulama başarısız", ex.Message);
+                logger.LogWarning("Kimlik doğrulama hatası: {Message}", ex.Message);
+                break;
+
             case NotFoundException:
                 problem = Create(StatusCodes.Status404NotFound, "Kayıt bulunamadı", ex.Message);
                 logger.LogWarning("Kayıt bulunamadı: {Message}", ex.Message);

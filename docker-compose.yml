@@ -23,6 +23,7 @@ services:
       sqlserver:
         condition: service_healthy
     environment:
+      Jwt__Key: ${JWT_KEY}
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: Server=sqlserver,1433;Database=ECommerceDb;User Id=sa;Password=${SA_PASSWORD};TrustServerCertificate=True
       SeedAdmin__Email: ${SEED_ADMIN_EMAIL}

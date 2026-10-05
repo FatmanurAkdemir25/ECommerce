@@ -1,6 +1,7 @@
-﻿namespace ECommerce.Infrastructure.Persistence;
+﻿using ECommerce.Application.Abstractions;
+namespace ECommerce.Infrastructure.Persistence;
 //uygulama ile vt arasındaki ana EF Core bağlantısını sağlar.
-public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options), IAppDbContext
 {
     //hangi entity lerin vt de kullanılacağını DbSet lerle tanımlar 
     public DbSet<User> Users => Set<User>();

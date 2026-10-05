@@ -22,6 +22,7 @@ try
     builder.Services.AddApplication(builder.Configuration);
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddSwaggerWithJwt();
+    builder.Services.AddJwtAuthentication(); 
 
     var app = builder.Build();
 
@@ -32,7 +33,8 @@ try
 
     app.UseSwagger();
     app.UseSwaggerUI();
-
+    app.UseAuthentication();
+    app.UseAuthorization();
     app.MapControllers();
 
     app.Run();
