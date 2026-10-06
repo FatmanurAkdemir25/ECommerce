@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using ECommerce.Application.Authorization;
 
 namespace ECommerce.Application;
 
@@ -21,6 +22,10 @@ public static class DependencyInjection
 
         services.TryAddSingleton(TimeProvider.System);
         services.AddScoped<IAuthService, AuthService>();
+        services.AddScoped<IUserPermissionService, UserPermissionService>();
+        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IPermissionAdminService, PermissionAdminService>();
+        services.AddScoped<IUserAccessService, UserAccessService>();
 
         return services;
     }
