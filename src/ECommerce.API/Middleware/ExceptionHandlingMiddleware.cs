@@ -59,6 +59,11 @@ public class ExceptionHandlingMiddleware(
                 logger.LogWarning("Kimlik doğrulama hatası: {Message}", ex.Message);
                 break;
 
+            case ForbiddenException:
+                problem = Create(StatusCodes.Status403Forbidden, "Erişim reddedildi", ex.Message);
+                logger.LogWarning("Erişim reddedildi: {Message}", ex.Message);
+                break;
+
             case NotFoundException:
                 problem = Create(StatusCodes.Status404NotFound, "Kayıt bulunamadı", ex.Message);
                 logger.LogWarning("Kayıt bulunamadı: {Message}", ex.Message);
