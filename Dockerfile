@@ -6,7 +6,7 @@ COPY src/ECommerce.Domain/*.csproj src/ECommerce.Domain/
 COPY src/ECommerce.Application/*.csproj src/ECommerce.Application/
 COPY src/ECommerce.Infrastructure/*.csproj src/ECommerce.Infrastructure/
 COPY src/ECommerce.API/*.csproj src/ECommerce.API/
-RUN dotnet restore
+RUN dotnet restore src/ECommerce.API/ECommerce.API.csproj
 
 COPY . .
 RUN dotnet publish src/ECommerce.API -c Release -o /app/publish --no-restore

@@ -8,7 +8,7 @@ public static class EffectivePermissionCalculator
 {
     // Sıra: 1) özel deny reddeder, 2) özel allow verir, 3) aksi halde rollerden gelenler.
     // Rol izinleriyle başlayıp özel kayıtları üstüne uygulamak bu sıralamayla aynı sonucu verir.
-    public static FrozenSet<string> Calculate(
+    public static IReadOnlySet<string> Calculate(
         IEnumerable<string> rolePermissions,
         IEnumerable<UserPermissionOverride> overrides)
     {
