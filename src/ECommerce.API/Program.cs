@@ -22,7 +22,8 @@ try
     builder.Services.AddApplication(builder.Configuration);
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddSwaggerWithJwt();
-    builder.Services.AddJwtAuthentication(); 
+    builder.Services.AddJwtAuthentication();
+    builder.Services.AddPermissionAuthorization();
 
     var app = builder.Build();
 
