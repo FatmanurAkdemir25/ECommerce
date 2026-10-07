@@ -5,6 +5,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using ECommerce.Application.Authorization;
 using ECommerce.Application.Catalog;
+using ECommerce.Application.Accounts;
+
 
 namespace ECommerce.Application;
 
@@ -31,6 +33,9 @@ public static class DependencyInjection
         services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IProductService, ProductService>();
         services.AddScoped<IStockService, StockService>();
+        services.AddScoped<IProfileService, ProfileService>();
+        services.AddScoped<IAddressService, AddressService>();
+        services.AddScoped<IUserDirectoryService, UserDirectoryService>();
 
         return services;
     }

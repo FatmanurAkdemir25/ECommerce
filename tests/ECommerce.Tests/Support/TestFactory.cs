@@ -26,18 +26,42 @@ public static class TestFactory
     public static ICacheService CreateCache() => new MemoryCacheService(
         new MemoryCache(new MemoryCacheOptions()), NullLogger<MemoryCacheService>.Instance);
 
-    public static async Task<User> AddUserAsync(AppDbContext db, bool active = true)
+    public static async Task<User> AddUserAsync(
+    AppDbContext db, bool active = true, string? email = null, string? fullName = null)
     {
         var user = new User
         {
-            Email = $"{Guid.NewGuid():N}@test.com",
-            FullName = "Test Kullanıcı",
+            Email = email ?? $"{Guid.NewGuid():N}@test.com",
+            FullName = fullName ?? "Test Kullanıcı",
             PasswordHash = "hash",
             IsActive = active
         };
         db.Users.Add(user);
         await db.SaveChangesAsync();
         return user;
+    }
+
+    public static async Task<Address> AddAddressAsync(
+        AppDbContext db, User user, bool isDefault = false, string city = "İstanbul")
+    {
+        var address = new Address
+        {
+            UserId = user.Id,
+            City = city,
+            AddressLine = "Test Mah. Test Sok. 1",
+            IsDefault = isDefault
+        };
+        db.Addresses.Add(address);
+        await db.SaveChangesAsync();
+        return address;
+    }
+
+    public static async Task<Order> AddOrderAsync(AppDbContext db, User user, Address address)
+    {
+        var order = new Order { UserId = user.Id, AddressId = address.Id, TotalAmount = 100m };
+        db.Orders.Add(order);
+        await db.SaveChangesAsync();
+        return order;
     }
 
     public static async Task<Role> AddRoleAsync(AppDbContext db, string name)
