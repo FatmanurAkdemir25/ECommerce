@@ -5,6 +5,7 @@ using ECommerce.Application;
 using ECommerce.Infrastructure;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using System.Text.Json.Serialization;
 
 // Uygulama ayağa kalkarken oluşan hataları da yakalamak için geçici logger
 Log.Logger = new LoggerConfiguration().WriteTo.Console().CreateBootstrapLogger();
@@ -18,7 +19,8 @@ try
         .ReadFrom.Services(services)
         .Enrich.FromLogContext());
 
-    builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>());
+    builder.Services.AddControllers(options => options.Filters.Add<ValidationFilter>())
+        .AddJsonOptions(options => options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
     builder.Services.AddApplication(builder.Configuration);
     builder.Services.AddInfrastructure(builder.Configuration);
     builder.Services.AddSwaggerWithJwt();

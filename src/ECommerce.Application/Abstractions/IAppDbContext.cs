@@ -1,5 +1,6 @@
 ﻿using ECommerce.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace ECommerce.Application.Abstractions;
 
@@ -22,6 +23,7 @@ public interface IAppDbContext
     DbSet<Payment> Payments { get; }
     DbSet<Receipt> Receipts { get; }
     DbSet<ProductTransaction> ProductTransactions { get; }
+    DatabaseFacade Database { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
