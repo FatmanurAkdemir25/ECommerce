@@ -5,6 +5,9 @@ using ECommerce.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging.Abstractions;
+using AutoMapper;
+using ECommerce.Application.Authorization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ECommerce.Tests.Support;
 
@@ -74,5 +77,50 @@ public static class TestFactory
             IsGranted = isGranted
         });
         await db.SaveChangesAsync();
+    }
+
+    public static IMapper CreateMapper()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddAutoMapper(cfg => { }, typeof(AuthorizationMappingProfile).Assembly);
+        return services.BuildServiceProvider().GetRequiredService<IMapper>();
+    }
+
+    public static async Task<User> AddUserWithPermissionsAsync(AppDbContext db, params string[] permissionNames)
+    {
+        var user = await AddUserAsync(db);
+        var role = await AddRoleAsync(db, $"Role-{Guid.NewGuid():N}");
+        foreach (var name in permissionNames)
+        {
+            var permission = await AddPermissionAsync(db, name);
+            await GrantToRoleAsync(db, role, permission);
+        }
+        await AddToRoleAsync(db, user, role);
+        return user;
+    }
+
+    public static async Task<Category> AddCategoryAsync(AppDbContext db, string name, bool active = true)
+    {
+        var category = new Category { Name = name, IsActive = active };
+        db.Categories.Add(category);
+        await db.SaveChangesAsync();
+        return category;
+    }
+
+    public static async Task<Product> AddProductAsync(
+        AppDbContext db, Category category, string name, decimal price = 10m, int stock = 0, bool active = true)
+    {
+        var product = new Product
+        {
+            CategoryId = category.Id,
+            Name = name,
+            Price = price,
+            Stock = stock,
+            IsActive = active
+        };
+        db.Products.Add(product);
+        await db.SaveChangesAsync();
+        return product;
     }
 }
