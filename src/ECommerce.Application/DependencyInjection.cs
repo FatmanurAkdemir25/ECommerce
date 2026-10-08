@@ -1,12 +1,13 @@
-﻿using ECommerce.Application.Auth;
+﻿using ECommerce.Application.Accounts;
+using ECommerce.Application.Auth;
+using ECommerce.Application.Authorization;
+using ECommerce.Application.Catalog;
+using ECommerce.Application.Orders;
+using ECommerce.Application.Shopping;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
-using ECommerce.Application.Authorization;
-using ECommerce.Application.Catalog;
-using ECommerce.Application.Accounts;
-using ECommerce.Application.Shopping;
 
 
 namespace ECommerce.Application;
@@ -38,6 +39,8 @@ public static class DependencyInjection
         services.AddScoped<IAddressService, AddressService>();
         services.AddScoped<IUserDirectoryService, UserDirectoryService>();
         services.AddScoped<ICartService, CartService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IPaymentService, PaymentService>();
 
         return services;
     }
