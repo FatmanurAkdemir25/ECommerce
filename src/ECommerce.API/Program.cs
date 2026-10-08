@@ -1,6 +1,7 @@
 using ECommerce.API.Extensions;
 using ECommerce.API.Filters;
 using ECommerce.API.Middleware;
+using ECommerce.API.RateLimiting;
 using ECommerce.Application;
 using ECommerce.Infrastructure;
 using Microsoft.Extensions.Hosting;
@@ -26,6 +27,7 @@ try
     builder.Services.AddSwaggerWithJwt();
     builder.Services.AddJwtAuthentication();
     builder.Services.AddPermissionAuthorization();
+    builder.Services.AddApiRateLimiting(builder.Configuration);
 
     var app = builder.Build();
 
@@ -37,6 +39,7 @@ try
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseAuthentication();
+    app.UseApiRateLimiting();
     app.UseAuthorization();
     app.MapControllers();
 
