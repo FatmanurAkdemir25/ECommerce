@@ -2,6 +2,8 @@
 using ECommerce.Application.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using ECommerce.API.RateLimiting;
 
 namespace ECommerce.API.Controllers;
 
@@ -10,6 +12,7 @@ namespace ECommerce.API.Controllers;
 [Produces("application/json")]
 public class AuthController(IAuthService authService) : ControllerBase
 {
+    [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
     [HttpPost("register")]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -20,6 +23,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         return StatusCode(StatusCodes.Status201Created, response);
     }
 
+    [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
     [HttpPost("login")]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -27,6 +31,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     public async Task<ActionResult<AuthResponse>> Login(LoginRequest request, CancellationToken ct) =>
         Ok(await authService.LoginAsync(request, ct));
 
+    [EnableRateLimiting(RateLimitingExtensions.AuthPolicy)]
     [HttpPost("refresh")]
     [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
