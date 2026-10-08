@@ -1,6 +1,7 @@
 ﻿using ECommerce.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace ECommerce.Application.Abstractions;
 
@@ -24,6 +25,7 @@ public interface IAppDbContext
     DbSet<Receipt> Receipts { get; }
     DbSet<ProductTransaction> ProductTransactions { get; }
     DatabaseFacade Database { get; }
+    ChangeTracker ChangeTracker { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using ECommerce.Application.Authorization;
 using ECommerce.Application.Catalog;
 using ECommerce.Application.Accounts;
+using ECommerce.Application.Shopping;
 
 
 namespace ECommerce.Application;
@@ -36,6 +37,7 @@ public static class DependencyInjection
         services.AddScoped<IProfileService, ProfileService>();
         services.AddScoped<IAddressService, AddressService>();
         services.AddScoped<IUserDirectoryService, UserDirectoryService>();
+        services.AddScoped<ICartService, CartService>();
 
         return services;
     }
