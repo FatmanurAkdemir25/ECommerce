@@ -24,4 +24,9 @@
     <ProjectReference Include="..\..\src\ECommerce.Infrastructure\ECommerce.Infrastructure.csproj" />
   </ItemGroup>
 
+	<ItemGroup>
+		<ProjectReference Include="..\..\src\ECommerce.API\ECommerce.API.csproj" />
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
 </Project>
