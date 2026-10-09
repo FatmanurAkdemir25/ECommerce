@@ -80,6 +80,18 @@ public class ExceptionHandlingMiddleware(
                 logger.LogWarning(ex, "Eşzamanlılık çakışması");
                 break;
 
+            case DbUpdateException dbEx when HasSqlError(dbEx, 547):
+                problem = Create(StatusCodes.Status409Conflict, "Veri bütünlüğü ihlali",
+                    "Kayıt başka kayıtlar tarafından kullanıldığı veya bir veri kuralını ihlal ettiği için işlem yapılamadı.");
+                logger.LogWarning(ex, "Yabancı anahtar / kontrol kısıtı ihlali");
+                break;
+
+            case DbUpdateException dbEx when HasSqlError(dbEx, 2601, 2627):
+                problem = Create(StatusCodes.Status409Conflict, "Kayıt zaten mevcut",
+                    "Aynı değerlere sahip bir kayıt zaten var.");
+                logger.LogWarning(ex, "Benzersizlik ihlali");
+                break;
+
             default:
                 logger.LogError(ex, "Beklenmeyen hata");
                 problem = Create(StatusCodes.Status500InternalServerError, "Sunucu hatası",
@@ -103,6 +115,15 @@ public class ExceptionHandlingMiddleware(
             problem, problem.GetType(), (JsonSerializerOptions?)null, "application/problem+json");
     }
 
+    private static bool HasSqlError(Exception ex, params int[] numbers)
+    {
+        for (var e = ex; e is not null; e = e.InnerException)
+        {
+            if (e is Microsoft.Data.SqlClient.SqlException sql && numbers.Contains(sql.Number))
+                return true;
+        }
+        return false;
+    }
     private static ProblemDetails Create(int status, string title, string detail) => new()
     {
         Status = status,
